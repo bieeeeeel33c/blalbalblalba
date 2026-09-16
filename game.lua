@@ -82,7 +82,7 @@ task.wait(3)
 
 local qt = queue_on_teleport or queueteleport or (syn and syn.queue_on_teleport)
 if qt then
-    qt([[loadstring(game:HttpGet("https://raw.githubusercontent.com/SEU_USER/SEU_REPO/main/hub.lua"))()]])
+    qt([[loadstring(game:HttpGet("https://raw.githubusercontent.com/bieeeeeel33c/blalbalblalba/refs/heads/main/hub.lua"))()]])
 end
 
 TeleportService:Teleport(HUB_PLACE_ID)
