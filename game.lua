@@ -4,7 +4,7 @@ local TeleportService = game:GetService("TeleportService")
 
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1549575922217132082/HDp3OhJXsO7h48PhLvxYKPCUK-Ehml8L0SybGxC_X1WPWRV__bYavG_Kvms7wNRaLuAF"
 local HUB_PLACE_ID = 15327728308
-local PING_ROLE_ID = "1535102256519577660"
+local PING_ROLE_ID = "1004910284948906076"
 local ITENS_ALVO = {"barret50", "renellim4", "m79", "backpacktier4"}
 
 if not game:IsLoaded() then
