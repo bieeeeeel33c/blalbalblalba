@@ -1,15 +1,36 @@
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1549575922217132082/HDp3OhJXsO7h48PhLvxYKPCUK-Ehml8L0SybGxC_X1WPWRV__bYavG_Kvms7wNRaLuAF"
 local HUB_PLACE_ID = 15327728308
-local PING_ROLE_ID = "1004910284948906076"
+local PING_ROLE_ID = "1535102256519577660"
 local ITENS_ALVO = {"barret50", "renellim4", "m79", "backpacktier4"}
+
+-- ================================
+-- CONFIGURACAO DE PAUSA
+-- ================================
+local PAUSE_CONFIG = {
+    KEYBIND = Enum.KeyCode.F6,
+
+    barret50      = true,   -- pausa se achar barret
+    renellim4     = false,   -- pausa se achar renelli
+    m79           = false,  -- pausa se achar m79
+    backpacktier4 = true,   -- pausa se achar tier4
+
+    ChineseZombie  = 0,     -- quantidade minima pra pausar (0 = nao pausa)
+    TacticalZombie = 1,     -- quantidade minima pra pausar (0 = nao pausa)
+}
+-- ================================
 
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
+
+local paused = false
+local pauseConnection = nil
 
 local function sendToDiscord(msg, ping)
     local req = syn and syn.request or http_request or request
@@ -25,10 +46,35 @@ local function sendToDiscord(msg, ping)
     end)
 end
 
+local function setupKeybind(onResume)
+    if pauseConnection then
+        pauseConnection:Disconnect()
+        pauseConnection = nil
+    end
+    pauseConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.KeyCode == PAUSE_CONFIG.KEYBIND and paused then
+            paused = false
+            pauseConnection:Disconnect()
+            pauseConnection = nil
+            onResume()
+        end
+    end)
+end
+
+local function waitForResume(onResume)
+    paused = true
+    setupKeybind(onResume)
+end
+
 task.wait(5)
 
 local found = {}
 local pinged = {}
+local shouldPause = false
+
+local chineseCount = 0
+local tacticalCount = 0
 
 local function scanPlayers()
     for _, player in ipairs(Players:GetPlayers()) do
@@ -47,6 +93,10 @@ local function scanPlayers()
                                 local mag = obj:FindFirstChild("BulletsInMagazine") and obj.BulletsInMagazine.Value or 0
                                 table.insert(found, string.format("%s | %s | %d balas", player.Name, nome, mag))
                                 sendToDiscord("Found: " .. player.Name .. " | " .. nome, true)
+
+                                if PAUSE_CONFIG[alvo] then
+                                    shouldPause = true
+                                end
                             end
                         end
                     end
@@ -61,6 +111,10 @@ local function scanPlayers()
                 pinged[key] = true
                 table.insert(found, string.format("%s | BackpackTier4 | N/A", player.Name))
                 sendToDiscord("Tier4: " .. player.Name, true)
+
+                if PAUSE_CONFIG["backpacktier4"] then
+                    shouldPause = true
+                end
             end
         end
     end
@@ -81,13 +135,21 @@ local function scanZombies()
                     local key = "chinese" .. tostring(Zombie)
                     if not pinged[key] then
                         pinged[key] = true
+                        chineseCount += 1
                         sendToDiscord("Chinese zombie: " .. ItemClass:gsub(".item", ""), true)
+                        if PAUSE_CONFIG.ChineseZombie > 0 and chineseCount >= PAUSE_CONFIG.ChineseZombie then
+                            shouldPause = true
+                        end
                     end
                 elseif Skin and Skin:find("Beret") then
                     local key = "tactical" .. tostring(Zombie)
                     if not pinged[key] then
                         pinged[key] = true
+                        tacticalCount += 1
                         sendToDiscord("Tactical zombie: " .. Skin, true)
+                        if PAUSE_CONFIG.TacticalZombie > 0 and tacticalCount >= PAUSE_CONFIG.TacticalZombie then
+                            shouldPause = true
+                        end
                     end
                 end
             end
@@ -105,11 +167,21 @@ if #found > 0 then
     sendToDiscord("Total: " .. #found, false)
 end
 
-task.wait(2)
-
-local qt = queue_on_teleport or queueteleport or (syn and syn.queue_on_teleport)
-if qt then
-    qt([[loadstring(game:HttpGet("https://raw.githubusercontent.com/bieeeeeel33c/blalbalblalba/refs/heads/main/hub.lua"))()]])
+if shouldPause then
+    local function continueLoop()
+        task.wait(2)
+        local qt = queue_on_teleport or queueteleport or (syn and syn.queue_on_teleport)
+        if qt then
+            qt([[loadstring(game:HttpGet("https://raw.githubusercontent.com/bieeeeeel33c/blalbalblalba/refs/heads/main/hub.lua"))()]])
+        end
+        TeleportService:Teleport(HUB_PLACE_ID)
+    end
+    waitForResume(continueLoop)
+else
+    task.wait(2)
+    local qt = queue_on_teleport or queueteleport or (syn and syn.queue_on_teleport)
+    if qt then
+        qt([[loadstring(game:HttpGet("https://raw.githubusercontent.com/bieeeeeel33c/blalbalblalba/refs/heads/main/hub.lua"))()]])
+    end
+    TeleportService:Teleport(HUB_PLACE_ID)
 end
-
-TeleportService:Teleport(HUB_PLACE_ID)
