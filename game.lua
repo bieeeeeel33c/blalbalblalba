@@ -21,7 +21,7 @@ local PAUSE_CONFIG = {
     backpacktier4 = true,   -- pausa se achar tier4
 
     ChineseZombie  = 0,     -- quantidade minima pra pausar (0 = nao pausa)
-    TacticalZombie = 2,     -- quantidade minima pra pausar (0 = nao pausa)
+    TacticalZombie = 1,     -- quantidade minima pra pausar (0 = nao pausa)
 }
 -- ================================
 
