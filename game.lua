@@ -17,11 +17,11 @@ local PAUSE_CONFIG = {
 
     barret50      = false,   -- pausa se achar barret
     renellim4     = false,   -- pausa se achar renelli
-    m79           = true,  -- pausa se achar m79
-    backpacktier4 = true,   -- pausa se achar tier4
+    m79           = false,  -- pausa se achar m79
+    backpacktier4 = false,   -- pausa se achar tier4
 
     ChineseZombie  = 0,     -- quantidade minima pra pausar (0 = nao pausa)
-    TacticalZombie = 2,     -- quantidade minima pra pausar (0 = nao pausa)
+    TacticalZombie = 1,     -- quantidade minima pra pausar (0 = nao pausa)
 }
 -- ================================
 
