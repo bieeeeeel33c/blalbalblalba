@@ -15,13 +15,13 @@ local ITENS_ALVO = {"barret50", "renellim4", "m79", "backpacktier4"}
 local PAUSE_CONFIG = {
     KEYBIND = Enum.KeyCode.F6,
 
-    barret50      = false,   -- pausa se achar barret
-    renellim4     = false,   -- pausa se achar renelli
+    barret50      = true,   -- pausa se achar barret
+    renellim4     = true,   -- pausa se achar renelli
     m79           = false,  -- pausa se achar m79
-    backpacktier4 = false,   -- pausa se achar tier4
+    backpacktier4 = true,   -- pausa se achar tier4
 
-    ChineseZombie  = 2,     -- quantidade minima pra pausar (0 = nao pausa)
-    TacticalZombie = 1,     -- quantidade minima pra pausar (0 = nao pausa)
+    ChineseZombie  = 0,     -- quantidade minima pra pausar (0 = nao pausa)
+    TacticalZombie = 0,     -- quantidade minima pra pausar (0 = nao pausa)
 }
 -- ================================
 
